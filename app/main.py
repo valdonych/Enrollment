@@ -1,16 +1,12 @@
 from fastapi import FastAPI, HTTPException, Request, status
 from fastapi.responses import RedirectResponse
 from fastapi.staticfiles import StaticFiles
-
-from starlette.middleware.authentication import AuthenticationMiddleware
-
+from fastapi.exceptions import HTTPException, RequestValidationError
+from loguru import logger
+from app.api.schemas.responses import ErrorResult
 from app.api.routes import api
 from app.config import config
-
-from app.core.engine import engine, get_session
-
-from app.core.models import Base
-from definitions import STATIC_DIR
+from starlette.responses import JSONResponse
 
 
 def get_application() -> FastAPI:
@@ -20,23 +16,23 @@ def get_application() -> FastAPI:
         debug=config.DEBUG,
     )
 
-    @application.exception_handler(status.HTTP_401_UNAUTHORIZED)
-    def auth_exception_handler(  # pylint: disable=unused-argument
-        request: Request, exc: HTTPException
-    ) -> RedirectResponse:
-        """
-        Redirect the user to the login page if not logged in
-        """
-        return RedirectResponse(url='/signin')
+    @application.exception_handler(HTTPException)
+    def http_exception_handler(request: Request, exc: HTTPException):
+        logger.error(exc)
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=ErrorResult(code=exc.status_code,
+                                message=exc.detail).dict(),
+        )
 
-    @application.on_event('startup')
-    def startup() -> None:
-        Base.metadata.create_all(engine)
-        get_session()
-
-    @application.on_event('shutdown')
-    def shutdown() -> None:
-        pass
+    @application.exception_handler(RequestValidationError)
+    async def validation_exception_handler(request, exc):
+        logger.error(exc)
+        return JSONResponse(
+            status_code=400,
+            content=ErrorResult(code=400,
+                                message='Validation Failed').dict(),
+        )
 
     application.include_router(api.login_api_router)
 

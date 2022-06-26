@@ -9,7 +9,7 @@ getenv = Config('.env')
 
 
 class GlobalConfig(BaseSettings):
-    DESCRIPTION = 'Second stage of backend school'
+    DESCRIPTION = 'Вступительное задание в Летнюю Школу Бэкенд Разработки Яндекса 2022'
     DEBUG: bool = False
     TESTING: bool = False
     SERVICE_NAME = 'JustMarkIt'
