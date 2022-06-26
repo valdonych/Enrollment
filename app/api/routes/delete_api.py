@@ -14,7 +14,10 @@ router = APIRouter()
 class Delete:
     s: Session = Depends(get_session)
 
-    @router.delete('/delete/{id}')
+    @router.delete('/delete/{id}',
+                   name='Удаляет элемент по идентификатору',
+                   status_code=200,
+                   tags=['Базовые задачи'])
     def delete_shop_unit(self,
                          id: str,
                          session: Session = Depends(get_session),

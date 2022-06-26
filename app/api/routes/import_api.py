@@ -12,7 +12,10 @@ router = APIRouter()
 @cbv(router)
 class Import:
 
-    @router.post('/import')
+    @router.post('/import',
+                 name='Добавляет новые товары или категории',
+                 status_code=200,
+                 tags=['Базовые задачи'])
     def import_shop_unit(self, items: ShopUnitImportRequest,
                          s: Session = Depends(get_session)
                          ) -> Response:

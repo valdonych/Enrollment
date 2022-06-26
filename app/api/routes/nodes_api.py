@@ -16,7 +16,9 @@ router = APIRouter()
 class Nodes:
     s: Session = Depends(get_session)
 
-    @router.get('/nodes/{id}', response_model=ShopUnitSchema, response_model_by_alias=True)
+    @router.get('/nodes/{id}', response_model=ShopUnitSchema, response_model_by_alias=True,
+                name='Получает информацию об элементе по идентификатору',
+                tags=['Базовые задачи'])
     def get_shop_unit(self,
                       id: Union[UUID, str],
                       session: Session = Depends(get_session),
