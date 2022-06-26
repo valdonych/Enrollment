@@ -8,6 +8,6 @@ services:
       args:
         ENVIRONMENT: ${ENVIRONMENT:-development}
     ports:
-      - "80:80"
+      - "80:8010"
     volumes:
       - '.:/opt/app'
